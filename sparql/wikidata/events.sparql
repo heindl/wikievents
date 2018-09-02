@@ -1,0 +1,17 @@
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT * WHERE {
+    ?eventUri wdt:P31/wdt:P279* wd:Q1190554 .
+    OPTIONAL { ?eventUri wdt:P585 ?date. }
+    OPTIONAL { ?eventUri wdt:P580 ?date. }
+    FILTER(BOUND(?date) && DATATYPE(?date) = xsd:dateTime && year(?date) > {{.YearStart}} && year(?date) < {{.YearEnd}}) .
+    ?eventUri rdfs:label ?eventLabel .
+    ?eventUri wdt:P31 ?typeId .
+    ?eventUri wdt:P625 ?coordinates .
+    SERVICE wikibase:label {
+       bd:serviceParam wikibase:language "en" .
+    }
+}
