@@ -1,0 +1,15 @@
+SELECT DISTINCT ?event ?name ?property ?personName WHERE {
+    ?event a dbo:Event; ?property ?value .
+#    ?event rdfs:label ?label .
+    ?event  foaf:name ?name .
+    MINUS { ?event a dbo:SportsEvent . }
+#    OPTIONAL {
+          ?event dbp:date ?date .
+          FILTER (?date <= "70"^^xsd:integer && ?date >= "-300"^^xsd:integer) .
+#    }
+    ?value rdfs:type ?type .
+    FILTER (?type = dbo:Person)
+    FILTER (lang(?label) = 'en')
+    ?value  foaf:name ?personName .
+
+}

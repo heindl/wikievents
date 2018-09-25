@@ -1,0 +1,13 @@
+SELECT DISTINCT ?object ?objectLabel ?objectDescription ?objectInstanceOfLabel ?propertyLabel ?wikibaseType ?value ?valueLabel ?valueDescription ?valueInstanceOf ?valueInstanceOfLabel WHERE {
+  VALUES (?object) {
+    {{ range .Entities }}{{ if . }}(<{{.}}>){{ end }}{{ end}}
+  } .
+  ?object ?p ?value .
+  ?object wdt:P31 ?objectInstanceOf.
+  hint:Query hint:optimizer "None" .
+  ?property wikibase:directClaim ?p .
+  ?property wikibase:propertyType ?wikibaseType .
+  OPTIONAL{?value wdt:P31 ?valueInstanceOf}.
+  FILTER(?wikibaseType != wikibase:ExternalId && ?wikibaseType != wikibase:CommonsMedia) .
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
+}

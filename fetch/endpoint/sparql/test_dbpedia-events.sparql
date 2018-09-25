@@ -1,0 +1,13 @@
+SELECT * WHERE {
+    ?event a <http://dbpedia.org/ontology/Event> .
+    ?event  foaf:name ?name .
+    MINUS { ?event a <http://dbpedia.org/ontology/SportsEvent> . }
+    ?event <http://www.w3.org/2002/07/owl#sameAs> ?sameAs .
+    FILTER(isUri(?sameAs) && CONTAINS(STR(?sameAs), 'wikidata.org'))
+    ?sameAs rdfs:label ?sameAsString .
+    FILTER (lang(?sameAsString) = 'en') .
+    OPTIONAL {
+     ?sameAs <http://www.wikidata.org/prop/P585> ?pointInTime .
+      ?sameAs <http://www.wikidata.org/prop/P585> ?location .
+    }
+}

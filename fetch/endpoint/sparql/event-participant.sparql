@@ -1,0 +1,11 @@
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wd: <http://www.wikidata.org/entity/>
+SELECT ?participant ?participantLabel ?typeLabel WHERE {
+    wd:{{.EventID}} wdt:P710 ?participant .
+    ?participant wdt:P31 ?type .
+    SERVICE wikibase:label {
+        bd:serviceParam wikibase:language "en" .
+    }
+}
