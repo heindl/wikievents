@@ -1,5 +1,5 @@
 products:
-  goethe:
+  wikivents:
     build:
       main-pkg: .
       os-archs:
