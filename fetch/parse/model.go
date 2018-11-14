@@ -36,7 +36,7 @@ func (Ω *entity) Write(rdf *rdf, schema *schema) error {
 		if err := rdf.WriteFeature(Ω.ID, pred, ""); err != nil {
 			return err
 		}
-		if err := schema.Write(pred, schemaTypeUID); err != nil {
+		if err := schema.Write(pred, schemaTypeDefault); err != nil {
 			return err
 		}
 	}
@@ -129,9 +129,8 @@ const (
 )
 
 type schema struct {
-	m      map[string]struct{}
+	m      *sync.Map
 	writer io.Writer
-	sync.Mutex
 }
 
 func (Ω *schema) Write(p predicate, t schemaType) error {
@@ -139,12 +138,9 @@ func (Ω *schema) Write(p predicate, t schemaType) error {
 	if t == schemaTypeUID {
 		line = fmt.Sprintf("%s: %s @reverse .\n", p, t)
 	}
-	Ω.Lock()
-	defer Ω.Unlock()
-	if _, ok := Ω.m[line]; !ok {
-		Ω.m[line] = struct{}{}
+	if _, ok := Ω.m.LoadOrStore(line, struct{}{}); !ok {
 		if _, err := Ω.writer.Write([]byte(line)); err != nil {
-			return errors.Wrapf(err, "could not Write [%s, %s]", p, t)
+			return errors.Wrapf(err, "could not write [%s, %s]", p, t)
 		}
 	}
 	return nil
@@ -152,9 +148,8 @@ func (Ω *schema) Write(p predicate, t schemaType) error {
 }
 
 type rdf struct {
-	m      map[string]struct{}
+	m      *sync.Map
 	writer io.Writer
-	sync.Mutex
 }
 
 func (Ω *rdf) WriteFeature(entityID entityID, predicate predicate, value string) error {
@@ -164,31 +159,24 @@ func (Ω *rdf) WriteFeature(entityID entityID, predicate predicate, value string
 		predicate,
 		value,
 	) + "\n"
-	Ω.Lock()
-	defer Ω.Unlock()
-	if _, ok := Ω.m[line]; !ok {
-		Ω.m[line] = struct{}{}
+	if _, ok := Ω.m.LoadOrStore(line, 1); !ok {
 		if _, err := Ω.writer.Write([]byte(line)); err != nil {
-			return errors.Wrapf(err, "could not Write [%s] [%s] [%s]", entityID, predicate, value)
+			return errors.Wrapf(err, "could not write [%s] [%s] [%s]", entityID, predicate, value)
 		}
 	}
 	return nil
 }
 
 func (Ω *rdf) WriteEdge(object entityID, predicate predicate, subject entityID) error {
-
 	line := fmt.Sprintf(
 		"_:%s <%s> _:%s .\n",
 		object,
 		predicate,
 		subject,
 	)
-	Ω.Lock()
-	defer Ω.Unlock()
-	if _, ok := Ω.m[line]; !ok {
-		Ω.m[line] = struct{}{}
+	if _, ok := Ω.m.LoadOrStore(line, 1); !ok {
 		if _, err := Ω.writer.Write([]byte(line)); err != nil {
-			return errors.Wrapf(err, "could not Write [%s, %s, %s]", object, predicate, subject)
+			return errors.Wrapf(err, "could not write [%s, %s, %s]", object, predicate, subject)
 		}
 	}
 	return nil

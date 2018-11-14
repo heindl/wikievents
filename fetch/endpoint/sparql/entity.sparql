@@ -1,9 +1,24 @@
-SELECT DISTINCT ?object ?objectLabel ?objectDescription ?objectInstanceOfLabel ?propertyLabel ?wikibaseType ?value ?valueLabel ?valueDescription ?valueInstanceOf ?valueInstanceOfLabel WHERE {
+SELECT DISTINCT
+    ?objectLabel
+    ?objectDescription
+    ?objectInstanceOfLabel
+    ?propertyLabel
+    ?wikibaseType
+    ?value
+    ?valueLabel
+    ?valueDescription
+    ?valueInstanceOf
+    ?valueInstanceOfLabel
+    (SAMPLE(?object) AS ?object)
+ WHERE {
   VALUES (?object) {
     {{ range .Entities }}{{ if . }}(<{{.}}>){{ end }}{{ end}}
   } .
   ?object ?p ?value .
-  ?object wdt:P31 ?objectInstanceOf.
+  ?object wdt:P31 ?objectInstanceOf .
+
+
+
   hint:Query hint:optimizer "None" .
   ?property wikibase:directClaim ?p .
   ?property wikibase:propertyType ?wikibaseType .

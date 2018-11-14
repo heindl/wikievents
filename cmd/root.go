@@ -6,7 +6,6 @@
 package cmd
 
 import (
-	"compress/gzip"
 	"fmt"
 	"io"
 	"os"
@@ -37,6 +36,7 @@ var rootCmd = &cobra.Command{
 		$ %s -o /tmp/ -s -70 -e 300
 		$ ls /tmp
 		wikivents.schema.gz		wikivents.nt.gz
+		$ dgraph live -s /tmp/wikivents.schema.gz -r /tmp/wikivents.nt.gz -z 127.0.0.1:5080
 	`, commandName),
 	RunE: process,
 }
@@ -60,7 +60,7 @@ func process(cmd *cobra.Command, args []string) (resErr error) {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
-	rdfWriter, rdfCloser, err := gZipWriter(filepath.Join(outputDirectory, "wikivents.nt.gz"))
+	rdfWriter, rdfCloser, err := gZipWriter(filepath.Join(outputDirectory, "wikivents.nt"))
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func process(cmd *cobra.Command, args []string) (resErr error) {
 		}
 	}()
 
-	schemaWriter, schemaCloser, err := gZipWriter(filepath.Join(outputDirectory, "wikivents.schema.gz"))
+	schemaWriter, schemaCloser, err := gZipWriter(filepath.Join(outputDirectory, "wikivents.schema"))
 	if err != nil {
 		return err
 	}
@@ -94,12 +94,13 @@ func gZipWriter(filePath string) (io.Writer, func() error, error) {
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "could not create file %s", filePath)
 	}
-	g := gzip.NewWriter(f)
 
-	return g, func() error {
-		if err := g.Close(); err != nil {
-			return errors.Wrap(err, "could not close gzip")
-		}
+	//g := gzip.NewWriter(f)
+
+	return f, func() error {
+		//if err := g.Close(); err != nil {
+		//	return errors.Wrap(err, "could not close gzip")
+		//}
 		if err := f.Close(); err != nil {
 			return errors.Wrapf(err, "could not close file %s", filePath)
 		}

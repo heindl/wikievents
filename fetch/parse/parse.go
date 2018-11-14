@@ -118,7 +118,7 @@ func (Ω *parser) Value() (*parsedValue, error) {
 		if err != nil {
 			return nil, err
 		}
-		gj := fmt.Sprintf(`{"type":"feature","geometry":{"type": "Point","coordinates":[%f,%f]}}`, lng, lat)
+		gj := fmt.Sprintf(`{"type": "Point","coordinates":[%f,%f]}`, lng, lat)
 		return &parsedValue{
 			stringValue: escapeFeatureValue(gj),
 			predicate:   newPredicate(predicateFeature, label),
@@ -146,7 +146,7 @@ func (Ω *parser) Value() (*parsedValue, error) {
 		return &parsedValue{
 			stringValue: escapeFeatureValue(stringVal),
 			predicate:   newPredicate(predicateFeature, label),
-			schemaType:  schemaTypeInt,
+			schemaType:  schemaTypeString,
 		}, nil
 	}
 }

@@ -9,3 +9,18 @@ SELECT ?participant ?participantLabel ?typeLabel WHERE {
         bd:serviceParam wikibase:language "en" .
     }
 }
+
+https://www.wikidata.org/wiki/Q188536
+
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wd: <http://www.wikidata.org/entity/>
+SELECT ?participant ?participantLabel ?typeLabel WHERE {
+    wd:Q188536 wdt:P710 ?participant .
+    ?object ?p ?value .
+    ?object wdt:P31 ?objectInstanceOf .
+    SERVICE wikibase:label {
+        bd:serviceParam wikibase:language "en" .
+    }
+}

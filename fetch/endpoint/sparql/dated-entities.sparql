@@ -1,5 +1,7 @@
 SELECT ?instanceOfLabel (group_concat(?e) as ?entities) WHERE {
   ?e (wdt:P585 | wdt:P580 | wdt:P569 | wdt:P571 | wdt:P1317 | wd:P2031) ?date.
+  # This may be faster:
+  # FILTER("2015-01-01"^^xsd:dateTime <= ?dob && ?dob < "2016-01-01"^^xsd:dateTime).
   FILTER(DATATYPE(?date) = xsd:dateTime && year(?date) > {{.YearStart}} && year(?date) < {{.YearEnd}}).
   SERVICE wikibase:label {
     bd:serviceParam wikibase:language "en" .

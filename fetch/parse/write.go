@@ -7,6 +7,7 @@ package parse
 
 import (
 	"io"
+	"sync"
 
 	"github.com/heindl/wikivents/fetch/endpoint"
 )
@@ -19,11 +20,11 @@ type Writer struct {
 func NewWriter(rdfWriter, schemaWriter io.Writer) *Writer {
 	return &Writer{
 		schema: &schema{
-			m:      map[string]struct{}{},
+			m:      new(sync.Map),
 			writer: schemaWriter,
 		},
 		rdf: &rdf{
-			m:      map[string]struct{}{},
+			m:      new(sync.Map),
 			writer: rdfWriter,
 		},
 	}
